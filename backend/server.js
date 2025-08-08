@@ -1,3 +1,5 @@
+// Local Document Agent - Backend Server
+// Handles document upload, processing, and AI-powered analysis
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
