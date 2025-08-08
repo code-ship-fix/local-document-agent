@@ -1,0 +1,71 @@
+name: Automatic Backup
+
+on:
+  push:
+    branches: [ main, master ]
+  schedule:
+    # Run every day at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: |
+          backend/package-lock.json
+          frontend/package-lock.json
+          
+    - name: Install backend dependencies
+      run: |
+        cd backend
+        npm ci
+        
+    - name: Install frontend dependencies
+      run: |
+        cd frontend
+        npm ci
+        
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm run build
+        
+    - name: Run tests (if available)
+      run: |
+        cd backend
+        npm test --if-present
+        cd ../frontend
+        npm test --if-present
+        
+    - name: Create backup archive
+      run: |
+        tar -czf backup-$(date +%Y%m%d-%H%M%S).tar.gz \
+          --exclude='node_modules' \
+          --exclude='build' \
+          --exclude='dist' \
+          --exclude='.git' \
+          --exclude='uploads' \
+          --exclude='chroma_db' \
+          .
+          
+    - name: Upload backup artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: project-backup-${{ github.run_number }}
+        path: backup-*.tar.gz
+        retention-days: 30
+        
+    - name: Notify backup completion
+      run: |
+        echo "Backup completed successfully at $(date)"
+        echo "Backup file: backup-$(date +%Y%m%d-%H%M%S).tar.gz" 

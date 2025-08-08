@@ -1,194 +1,190 @@
-# 📄 Local Document Agent
+# Local Document Agent
 
-A fast, lightweight local-first document Q&A application that allows you to upload documents and chat with them using your local LLM via Ollama.
+A comprehensive document processing and management system with vector storage capabilities, featuring a React frontend and Node.js backend.
 
-## ✨ Features
+## 🚀 Features
 
-- **Local-First**: Everything runs on your machine, no cloud dependencies
-- **Multi-Agent Support**: Choose between different LLM models (Nous Hermes 2 - Mixtral, GPT-OSS 20B)
-- **Semantic Search**: Advanced vector-based retrieval using ChromaDB and sentence-transformers
-- **Document Upload**: Support for PDF, DOCX, and TXT files
-- **Smart Chunking**: Documents are intelligently chunked for better retrieval
-- **Vector Storage**: Uses ChromaDB for persistent vector storage with SQLite backend
-- **RAG Chat**: Ask questions about your documents using Retrieval-Augmented Generation
-- **Modern UI**: Clean, responsive interface with drag-and-drop upload and model selection
-- **Ollama Integration**: Works with your local Ollama models
-- **Fallback Support**: Graceful degradation to word-overlap search if vector service unavailable
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-1. **Node.js** (v16 or higher)
-2. **Python 3.8+** (for vector store functionality)
-3. **Ollama** installed and running
-4. **Nous Hermes 2 - Mixtral** and **GPT-OSS 20B** models pulled in Ollama
-
-### Installation
-
-1. **Clone or navigate to the project:**
-   ```bash
-   cd "Local Document Agent"
-   ```
-
-2. **Install backend dependencies:**
-   ```bash
-   cd backend
-   npm install
-   ```
-
-3. **Install frontend dependencies:**
-   ```bash
-   cd ../frontend
-   npm install
-   ```
-
-4. **Install Python dependencies (for vector store):**
-   ```bash
-   cd ..
-   pip3 install -r requirements.txt
-   ```
-
-### Running the Application
-
-#### Option 1: Start with Vector Store (Recommended)
-```bash
-# Start all services with semantic search
-npm run start-vector
-```
-
-#### Option 2: Start without Vector Store (Legacy)
-```bash
-# Start backend and frontend only
-npm start
-```
-
-The application will be available at:
-- **Frontend**: `http://localhost:3000`
-- **Backend**: `http://localhost:3003`
-- **Vector Service**: `http://localhost:8000` (if using vector store)
-
-## 🔧 Configuration
-
-### Ollama Setup
-
-Make sure you have Ollama running and the required models installed:
-
-```bash
-# Install Ollama (if not already installed)
-# Visit: https://ollama.ai
-
-# Pull the required models
-ollama pull nous-hermes2-mixtral
-ollama pull gpt-oss:20b
-
-# Start Ollama
-ollama serve
-```
-
-### Backend Configuration
-
-The backend is configured to:
-- Run on port 3003
-- Accept file uploads up to 50MB
-- Use FAISS for vector storage (continues without FAISS if not available)
-- Connect to Ollama on `localhost:11434`
-
-You can modify these settings in `backend/server.js`.
+- **Document Upload & Processing**: Upload and process various document formats (PDF, TXT, etc.)
+- **Vector Storage**: Advanced document indexing using ChromaDB for semantic search
+- **Modern UI**: React-based frontend with TypeScript
+- **RESTful API**: Node.js backend with Express
+- **Automatic Backups**: GitHub Actions workflow for daily backups
+- **Document Management**: View, search, and manage uploaded documents
 
 ## 📁 Project Structure
 
 ```
 Local Document Agent/
-├── backend/
-│   ├── server.js          # Express server with API endpoints
-│   ├── package.json       # Backend dependencies
-│   └── uploads/           # Document storage
-├── frontend/
-│   ├── src/
-│   │   ├── App.tsx        # Main React component
-│   │   ├── App.css        # Styles
-│   │   └── ...
-│   └── package.json       # Frontend dependencies
-└── README.md
+├── frontend/          # React TypeScript frontend
+├── backend/           # Node.js Express backend
+├── chroma_db/         # Vector database storage
+├── uploads/           # Document upload directory
+├── .github/           # GitHub Actions workflows
+└── scripts/           # Utility scripts
 ```
 
-## 🎯 Usage
+## 🛠️ Setup Instructions
 
-### Uploading Documents
+### Prerequisites
 
-1. Click the "Upload Document" button
-2. Select a PDF, DOCX, or TXT file
-3. The document will be processed and chunked automatically
-4. You'll see it appear in the documents list
+- Node.js (v16 or higher)
+- Python 3.8+ (for vector processing)
+- Git
 
-### Chatting with Documents
+### Installation
 
-1. Upload a document using the upload area
-2. Select your preferred AI model from the dropdown in the chat header
-3. Type your question in the input field
-4. Press Enter or click the send button
-5. The AI will search through your documents and provide an answer using the selected model
+1. **Clone the repository**
+   ```bash
+   git clone <your-github-repo-url>
+   cd "Local Document Agent"
+   ```
 
-### Managing Documents
+2. **Install backend dependencies**
+   ```bash
+   cd backend
+   npm install
+   ```
 
-- View all uploaded documents in the Documents tab
-- See how many chunks each document was split into
-- Delete documents you no longer need
+3. **Install frontend dependencies**
+   ```bash
+   cd ../frontend
+   npm install
+   ```
 
-## 🔍 How It Works
+4. **Install Python dependencies**
+   ```bash
+   cd ..
+   pip install -r requirements.txt
+   ```
 
-1. **Document Processing**: When you upload a document, it's:
-   - Extracted (PDF → text, DOCX → text, TXT → text)
-   - Chunked into smaller pieces (1000 characters with 200 character overlap)
-   - Embedded using your local LLM
-   - Stored in FAISS vector database
+### Running the Application
 
-2. **Question Answering**: When you ask a question:
-   - Your question is embedded
-   - Similar document chunks are retrieved from FAISS
-   - The relevant context is sent to your LLM
-   - The LLM generates an answer based on the context
+1. **Start the vector service**
+   ```bash
+   ./start-vector.sh
+   ```
 
-## 🛠️ Technical Stack
+2. **Start the backend server**
+   ```bash
+   cd backend
+   npm start
+   ```
 
-- **Backend**: Express.js, Node.js
-- **Frontend**: React, TypeScript
-- **Vector Store**: FAISS
-- **Document Processing**: pdf-parse, mammoth
-- **Multi-Agent LLM**: Ollama with support for multiple models
-- **UI**: Lucide React icons, custom CSS
+3. **Start the frontend**
+   ```bash
+   cd frontend
+   npm start
+   ```
 
-## 🔧 Troubleshooting
+4. **Or use the combined start script**
+   ```bash
+   ./start.sh
+   ```
 
-### Common Issues
+## 🔄 GitHub Integration & Automatic Backups
 
-1. **Ollama not running**
-   - Make sure Ollama is installed and running
-   - Check that the model is pulled: `ollama list`
+This project is configured with GitHub Actions for automatic backups:
 
-2. **Backend connection errors**
-   - Ensure the backend is running on port 3003
-   - Check that Ollama is accessible on port 11434
+### Backup Schedule
+- **Daily backups**: Runs every day at 2 AM UTC
+- **Push-triggered backups**: Automatic backup on every push to main/master branch
+- **Manual backups**: Can be triggered manually from GitHub Actions tab
 
-3. **File upload issues**
-   - Check file size (should be under 50MB)
-   - Ensure file type is supported (PDF, DOCX, TXT)
+### What Gets Backed Up
+- All source code
+- Configuration files
+- Documentation
+- Dependencies lists
 
-4. **Memory issues**
-   - Large documents may require more RAM
-   - Consider chunking documents into smaller files
+### What's Excluded
+- `node_modules/` (dependencies)
+- `uploads/` (user documents)
+- `chroma_db/` (vector database)
+- Build artifacts
+- Environment files
 
-### Performance Tips
+### Backup Artifacts
+- Stored as GitHub Actions artifacts
+- Retained for 30 days
+- Compressed as `.tar.gz` files
+- Named with timestamp: `backup-YYYYMMDD-HHMMSS.tar.gz`
 
-- Use smaller documents for faster processing
-- Close other applications to free up memory
-- Consider using a more powerful machine for large document collections
+## 📚 Usage
+
+1. **Upload Documents**: Use the web interface to upload PDF, TXT, or other document formats
+2. **Search Documents**: Use the search functionality to find documents by content
+3. **Manage Documents**: View, download, or delete uploaded documents
+4. **Vector Search**: Advanced semantic search through document content
+
+## 🔧 Configuration
+
+### Environment Variables
+Create a `.env` file in the backend directory:
+
+```env
+PORT=3001
+NODE_ENV=development
+UPLOAD_PATH=./uploads/documents
+VECTOR_DB_PATH=./chroma_db
+```
+
+### Vector Database
+The system uses ChromaDB for vector storage. The database is automatically initialized when the vector service starts.
+
+## 🧪 Testing
+
+```bash
+# Backend tests
+cd backend
+npm test
+
+# Frontend tests
+cd frontend
+npm test
+```
+
+## 📦 Deployment
+
+### Production Build
+```bash
+# Build frontend
+cd frontend
+npm run build
+
+# Start production server
+cd ../backend
+NODE_ENV=production npm start
+```
 
 ## 🤝 Contributing
 
-This is a local-first application designed for personal use. Feel free to modify and extend it for your needs!
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make your changes
+4. Commit your changes: `git commit -m 'Add feature'`
+5. Push to the branch: `git push origin feature-name`
+6. Submit a pull request
 
 ## 📄 License
 
-This project is open source and available under the MIT License. 
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For issues and questions:
+1. Check the existing issues
+2. Create a new issue with detailed information
+3. Include logs and error messages
+
+## 🔄 Backup Recovery
+
+To restore from a backup:
+1. Download the backup artifact from GitHub Actions
+2. Extract the archive: `tar -xzf backup-YYYYMMDD-HHMMSS.tar.gz`
+3. Replace the current project files with the backup contents
+4. Reinstall dependencies if needed
+
+---
+
+**Last updated**: $(date)
+**Version**: 1.0.0 
