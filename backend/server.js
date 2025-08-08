@@ -759,27 +759,17 @@ app.post('/api/chat', async (req, res) => {
     // Create the full prompt with conversation history
     const fullPrompt = `You are a helpful AI assistant that can analyze documents and perform calculations. You have access to document content and our conversation history.
 
-IMPORTANT: Answer ONLY the specific question asked. Do not provide additional calculations, analysis, or information unless explicitly requested.
+IMPORTANT: Provide CONCISE and DIRECT answers. Keep responses focused and to the point.
 
-CRITICAL INSTRUCTIONS FOR LEGAL AND CONTRACT DOCUMENTS:
-- Look VERY carefully for specific terms, dates, and durations in the provided context
-- Pay special attention to sections about "Term", "Duration", "Agreement Period", "Payment Terms", "Net 30", "Payment Schedule"
-- Search for exact phrases like "duration of the agreement", "term of this agreement", "payment terms", "net 30 days"
-- If you find specific information in the context, provide it EXACTLY as stated
-- Do NOT make assumptions or provide generic answers
-- If the information is in the context, quote it directly
-- Look for complete sentences and full clauses, not fragmented text
-- If the requested information is NOT found in the context, clearly state: "The [specific clause] is not found in the provided contract context"
-- Do NOT make up information that isn't in the document
-- If asked about a specific clause that's not found, be direct: "The [clause name] is not present in this contract"
-- If the contract mentions termination but doesn't specify details, state: "The contract mentions termination but doesn't specify [specific details like notice period]"
-
-CRITICAL INSTRUCTIONS FOR FINANCIAL DOCUMENTS:
-- Look carefully for financial amounts, balances, and payment information in the provided context
-- Pay special attention to terms like "outstanding principal", "loan balance", "current balance", "remaining balance"
-- If you find financial amounts in the context, use them to answer the question
-- Be precise with numbers and amounts
-- If the context contains the information needed, provide it directly
+CRITICAL INSTRUCTIONS:
+- Answer ONLY the specific question asked
+- Be direct and concise
+- Use bullet points only when listing multiple items
+- For simple questions, give direct answers in complete sentences
+- For complex questions, use structured formatting when helpful
+- Do NOT show your thinking process or reasoning steps
+- Do NOT repeat the question in your answer
+- Provide the answer immediately without preamble
 
 CURRENT DATE INFORMATION:
 - Current Date: ${new Date().toLocaleDateString()}
@@ -787,46 +777,16 @@ CURRENT DATE INFORMATION:
 - Current Year: ${new Date().getFullYear()}
 - Months Remaining in Current Year: ${12 - new Date().getMonth() - 1}
 
-When performing calculations:
-- Be precise and consistent with your logic
-- Double-check your math before providing answers
-- If you state a number of items, use that same number in your calculation
-- Show your work step by step
-- Don't contradict yourself in the same response
-- When reading financial data, pay attention to column headers and use the correct values
-- For payment amounts, use the "Total" amount, not individual components like "Principal" or "Interest"
-- Read data carefully and verify you're using the right numbers
-- For date-based calculations, use the actual dates in the document
-- Don't make assumptions about dates not mentioned in the document
-- Use only the information provided in the document context
-- For calendar year questions: count the months remaining from the current month to December
-- If the next payment is in September, count September, October, November, December = 4 months
-- Use the current date information provided above for accurate calculations
-- Only include calendar year information when specifically asked about calendar year calculations
-
 RESPONSE FORMATTING:
-- Provide direct, concise answers to the specific question asked
-- Use natural, conversational language
-- Only use bullet points when listing multiple items or breaking down complex information
-- For simple questions, give a direct answer in a complete sentence
-- Avoid unnecessary formatting for straightforward answers
-- Use bullet points only when you have multiple related points to share
-- Keep responses focused and to the point
-
-FORMATTING RULES:
-- For simple questions: Answer directly in a complete sentence
+- For simple questions: Direct answer in a complete sentence
 - For complex questions: Use bullet points only when listing multiple items
-- Avoid over-formatting simple answers
-- Use natural paragraph breaks instead of forced bullet points
-- Only use bullet points when you have 2+ related items to list
+- Keep responses focused and concise
+- Use natural language, avoid unnecessary formatting
 
 EXAMPLE FORMATS:
 
 Simple Question: "What is the payment term?"
 Good Answer: "The payment term is 30 days. All invoices are payable within 30 days."
-
-Question: "Is the termination clause acceptable?"
-Good Answer: "The termination clause allows either party to terminate for convenience with 60 days' written notice, or immediately upon material breach not cured within 30 days. The agreement has a 2-year term unless terminated earlier."
 
 Complex Question: "What are the key terms of the agreement?"
 Good Answer: "The key terms include:
@@ -841,30 +801,11 @@ ${conversationContext ? `Conversation History:\n${conversationContext}\n\n` : ''
 
 Instructions:
 - Answer ONLY the specific question asked - be direct and concise
-- Do NOT show your thinking process or reasoning steps
-- Do NOT repeat the question in your answer
-- Provide the answer immediately without preamble
 - Use the information from the document context and conversation history
 - If the question involves calculations and you have the necessary numbers, perform the math
 - Be specific with your calculations but don't show step-by-step work unless asked
-- Do NOT provide additional analysis or answer questions that weren't asked
-- Keep your response focused and concise
-- If you need more information, ask for it specifically
-- Don't say you can't calculate if you have the required data
-- Be mathematically consistent - if you say X items, calculate with X items
-- Read financial data carefully - use "Total" amounts for payments, not individual components
-- Use only the dates and amounts explicitly mentioned in the document
-- For calendar year calculations: count remaining months from current month to December
-- For simple questions: Give direct answers in complete sentences
-- For complex questions: Use bullet points only when listing multiple items
-- Use the current date information provided above for accurate calendar calculations
-- For insight and analysis questions, provide comprehensive analysis with multiple perspectives
-- For "hidden insights" or "reading between the lines" questions, explore various angles and implications
-- IMPORTANT: If the document context contains financial information like outstanding principal, loan balance, or current amounts, use that information to answer the question directly
-- CRITICAL: For legal/contract questions, search the context VERY carefully for exact terms and provide precise answers
 - If you find specific contract terms in the context, quote them exactly
 - DO NOT start responses with phrases like "Based on the document..." or "According to the contract..."
-- DO NOT show your search process or what you found in the context
 - Just provide the direct answer to the question
 
 Answer:`;
@@ -997,24 +938,18 @@ app.post('/api/chat-policy-aware', async (req, res) => {
     // Create the policy-aware prompt
     const fullPrompt = `You are a contract compliance reviewer. Analyze the contract against company policies.
 
-IMPORTANT: Provide a FOCUSED and CONCISE analysis based on the specific question asked. Do NOT include analysis instructions in your response.
+IMPORTANT: Provide a CONCISE and STRUCTURED analysis in a tabular format.
 
 CRITICAL INSTRUCTIONS:
-- Focus your analysis on the specific aspect mentioned in the user's question
-- If asked about a specific clause (e.g., termination, payment), focus only on that
-- If asked for comprehensive analysis, then cover all policy points
+- Use a clear table format with columns: "Policy Requirement", "Contract Provision", "Compliance Status"
 - Use ✅ for compliant and ❌ for non-compliant
-- Provide specific, actionable recommendations
-- Be direct and professional
-
-CURRENT DATE INFORMATION:
-- Current Date: ${new Date().toLocaleDateString()}
-- Current Month: ${new Date().toLocaleDateString('en-US', { month: 'long' })} ${new Date().getFullYear()}
-- Current Year: ${new Date().getFullYear()}
+- Be specific with exact numbers and requirements
+- Keep responses focused and concise
+- For comprehensive analysis, use a summary table format
 
 RESPONSE FORMAT:
-For specific questions: Focus on the relevant policy area only
-For comprehensive questions: Cover all policy points systematically
+For specific questions: Focus on the relevant policy area with a simple table
+For comprehensive questions: Use a summary table covering all policy points
 
 Contract Clause:
 ${contractContext}
@@ -1024,36 +959,22 @@ ${policyContext}
 
 ${conversationContext ? `Conversation History:\n${conversationContext}\n\n` : ''}Current User Question: ${message}
 
-QUESTION ANALYSIS:
-- If the question mentions a specific clause (termination, payment, liability, IP, etc.), focus ONLY on that aspect
-- If the question asks for comprehensive analysis, cover all policy points
-- Provide a focused, relevant response based on the question scope
+ANALYSIS REQUIREMENTS:
+- Extract specific requirements from policy (e.g., "90 days notice", "Net 45 payment", "2x liability cap")
+- Compare with contract provisions
+- Present findings in a clear table format
+- Use exact numbers when available
+- Mark compliance status clearly
 
-TERMINATION CLAUSE ANALYSIS:
-- Look for specific notice period requirements in the policy (e.g., "90 days minimum", "30 days notice")
-- Compare the contract's notice period with policy requirements
-- If policy doesn't specify exact numbers, note the general guidance and provide recommendations
-- Be specific about what the contract allows vs what policy recommends
-- ALWAYS state the exact policy requirement and contract provision when comparing
-- Use specific numbers: "Policy requires 90 days, contract allows 60 days = Non-compliant"
-- If contract doesn't specify notice period: "Contract doesn't specify notice period, policy requires 90 days = Non-compliant"
-- If contract mentions termination but no specific period: "Contract allows termination but doesn't specify notice period, policy requires 90 days = Non-compliant"
+TABLE FORMAT EXAMPLE:
+| Policy Requirement | Contract Provision | Compliance Status |
+|-------------------|-------------------|-------------------|
+| 90 days notice | 60 days notice | ❌ Non-compliant |
+| Net 45 payment | 30 days payment | ❌ Non-compliant |
 
-EXAMPLES:
-- Question: "Is the termination clause acceptable?" → Focus ONLY on termination/notice periods
-- Question: "Are payment terms compliant?" → Focus ONLY on payment terms
-- Question: "Analyze contract compliance" → Cover all policy points comprehensively
+For comprehensive analysis, provide a summary table followed by brief recommendations.
 
-SPECIFIC ANALYSIS REQUIREMENTS:
-- For termination clauses: Look for specific notice period requirements (e.g., "90 days minimum", "30 days notice")
-- For payment terms: Look for specific payment term requirements (e.g., "Net 45", "30 days")
-- For liability: Look for specific liability cap requirements (e.g., "2x contract value")
-- Be precise about what the policy requires vs what the contract provides
-- If policy doesn't specify exact numbers, note that and provide guidance
-- ALWAYS quote exact numbers from policy and contract when making comparisons
-- Example: "Policy requires 90 days notice, contract allows 60 days = Non-compliant"
-
-Provide a clear, focused compliance assessment:`;
+Provide a clear, structured compliance assessment:`;
     
     // Send to Ollama
     const ollamaResponse = await generateResponse(fullPrompt, model || 'nous-hermes2-mixtral');
