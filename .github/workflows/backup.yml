@@ -80,15 +80,30 @@ jobs:
     - name: Create backup archive
       run: |
         echo "📦 Creating backup archive..."
-        tar -czf backup-$(date +%Y%m%d-%H%M%S).tar.gz \
-          --exclude='node_modules' \
-          --exclude='build' \
-          --exclude='dist' \
-          --exclude='.git' \
-          --exclude='uploads' \
-          --exclude='chroma_db' \
-          --exclude='*.log' \
-          .
+        # Create a temporary directory for backup
+        mkdir -p temp_backup
+        
+        # Copy files to temp directory, excluding problematic directories
+        rsync -av --exclude='node_modules' \
+                  --exclude='build' \
+                  --exclude='dist' \
+                  --exclude='.git' \
+                  --exclude='uploads' \
+                  --exclude='chroma_db' \
+                  --exclude='*.log' \
+                  --exclude='temp_backup' \
+                  --exclude='.DS_Store' \
+                  --exclude='*.tmp' \
+                  --exclude='*.swp' \
+                  --exclude='*.swo' \
+                  . temp_backup/
+        
+        # Create tar archive from temp directory
+        tar -czf backup-$(date +%Y%m%d-%H%M%S).tar.gz -C temp_backup .
+        
+        # Clean up temp directory
+        rm -rf temp_backup
+        
         echo "✅ Backup archive created: backup-$(date +%Y%m%d-%H%M%S).tar.gz"
         ls -la backup-*.tar.gz
           
