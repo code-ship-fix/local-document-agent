@@ -1,0 +1,30 @@
+{
+  "name": "local-document-agent",
+  "version": "1.0.0",
+  "description": "A fast, lightweight local-first document Q&A application",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "start": "./start.sh",
+    "start-vector": "./start-vector.sh",
+    "start-backend": "cd backend && npm run dev",
+    "start-frontend": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "document-agent",
+    "local-llm",
+    "rag",
+    "ollama",
+    "faiss",
+    "react",
+    "express"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "local"
+  }
+} 
