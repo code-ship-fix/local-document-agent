@@ -240,7 +240,7 @@ class VectorStore:
             return []
     
     def search_policy_aware(self, query: str, document_id: Optional[str] = None, 
-                           contract_top_k: int = 3, policy_top_k: int = 3) -> Dict:
+                           contract_top_k: int = 5, policy_top_k: int = 8) -> Dict:
         """
         Search both contract and policy collections for policy-aware analysis
         

@@ -863,13 +863,19 @@ app.post('/api/chat-policy-aware', async (req, res) => {
     const vectorServiceAvailable = await checkVectorService();
     if (vectorServiceAvailable) {
       try {
+        // For comprehensive policy analysis, use broader search terms
+        let searchQuery = message;
+        if (message.toLowerCase().includes('compliance') || message.toLowerCase().includes('violate') || message.toLowerCase().includes('policy')) {
+          searchQuery = 'termination payment liability confidentiality intellectual property compliance policy requirements';
+        }
+        
         const response = await fetch(`${VECTOR_SERVICE_URL}/search_policy_aware`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            query: message,
+            query: searchQuery,
             document_id: documentId,
             contract_top_k: 5,
             policy_top_k: 8
@@ -938,18 +944,17 @@ app.post('/api/chat-policy-aware', async (req, res) => {
     // Create the policy-aware prompt
     const fullPrompt = `You are a contract compliance reviewer. Analyze the contract against company policies.
 
-IMPORTANT: Provide a CONCISE and STRUCTURED analysis in a tabular format.
+IMPORTANT: Provide a COMPREHENSIVE and STRUCTURED analysis in a tabular format.
 
 CRITICAL INSTRUCTIONS:
 - Use a clear table format with columns: "Policy Requirement", "Contract Provision", "Compliance Status"
 - Use ✅ for compliant and ❌ for non-compliant
 - Be specific with exact numbers and requirements
-- Keep responses focused and concise
-- For comprehensive analysis, use a summary table format
+- For comprehensive analysis, cover ALL policy points found in the context
+- Look for ALL compliance issues: termination, payment, liability, confidentiality, IP, etc.
 
 RESPONSE FORMAT:
-For specific questions: Focus on the relevant policy area with a simple table
-For comprehensive questions: Use a summary table covering all policy points
+For comprehensive questions: Use a summary table covering ALL policy points found
 
 Contract Clause:
 ${contractContext}
@@ -960,21 +965,31 @@ ${policyContext}
 ${conversationContext ? `Conversation History:\n${conversationContext}\n\n` : ''}Current User Question: ${message}
 
 ANALYSIS REQUIREMENTS:
-- Extract specific requirements from policy (e.g., "90 days notice", "Net 45 payment", "2x liability cap")
-- Compare with contract provisions
-- Present findings in a clear table format
+- Extract ALL specific requirements from policy (e.g., "90 days notice", "Net 45 payment", "2x liability cap", "confidentiality", "IP ownership")
+- Compare with ALL contract provisions found
+- Present findings in a clear table format covering ALL policy points
 - Use exact numbers when available
-- Mark compliance status clearly
+- Mark compliance status clearly for EACH policy point
+- If policy mentions multiple requirements, check EACH one against the contract
+
+COMPREHENSIVE ANALYSIS:
+- Look for termination clauses and notice periods
+- Check payment terms and conditions
+- Review liability limitations and caps
+- Examine confidentiality requirements
+- Verify intellectual property provisions
+- Check any other policy requirements mentioned
 
 TABLE FORMAT EXAMPLE:
 | Policy Requirement | Contract Provision | Compliance Status |
 |-------------------|-------------------|-------------------|
 | 90 days notice | 60 days notice | ❌ Non-compliant |
 | Net 45 payment | 30 days payment | ❌ Non-compliant |
+| 2x liability cap | 1x liability cap | ❌ Non-compliant |
 
-For comprehensive analysis, provide a summary table followed by brief recommendations.
+For comprehensive analysis, provide a summary table covering ALL policy points found, followed by brief recommendations.
 
-Provide a clear, structured compliance assessment:`;
+Provide a clear, structured compliance assessment covering ALL policy requirements:`;
     
     // Send to Ollama
     const ollamaResponse = await generateResponse(fullPrompt, model || 'nous-hermes2-mixtral');
